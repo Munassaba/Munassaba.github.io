@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>طلب حجز | مُناسبة</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-group { margin-bottom: 15px; text-align: right; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        form { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><a href="index.html">الرئيسية</a></li>
+        <li><a href="products.html">المنتجات</a></li>
+        <li><a href="order.html">طلب حجز</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+    <h2 style="text-align: center;">أرسل طلبك الآن</h2>
+    
+    <form>
+        <div class="form-group">
+            <label>الاسم الكامل:</label>
+            <input type="text" placeholder="أدخل اسمك">
+        </div>
+        <div class="form-group">
+            <label>نوع المناسبة:</label>
+            <select>
+                <option>عرس</option>
+                <option>وليمة / عقيقة</option>
+                <option>حفل تخرج</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>المعدات المطلوبة:</label>
+            <textarea rows="4" placeholder="مثال: 100 كرسي، 10 طاولات..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-main" style="width: 100%; border: none; cursor: pointer;">إرسال الطلب</button>
+    </form>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <p>أو تواصل معنا مباشرة عبر:</p>
+        <a href="https://wa.me/213552951953" class="btn btn-whatsapp">واتساب سريع</a>
+    </div>
+</div>
+
+</body>
+</html>
