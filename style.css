@@ -488,3 +488,139 @@ transform:scale(1.03);
 ```
 
 }
+
+/* =========================
+BACK TO TOP
+========================= */
+
+#backToTop{
+
+```
+position:fixed;
+
+right:20px;
+bottom:20px;
+
+width:55px;
+height:55px;
+
+border:none;
+
+border-radius:50%;
+
+background:var(--primary);
+
+color:white;
+
+font-size:24px;
+
+cursor:pointer;
+
+display:none;
+
+justify-content:center;
+align-items:center;
+
+z-index:1000;
+```
+
+}
+
+/* =========================
+SCROLL EFFECT
+========================= */
+
+.card{
+
+```
+opacity:0;
+
+transform:translateY(40px);
+```
+
+}
+
+.card.show{
+
+```
+opacity:1;
+
+transform:translateY(0);
+```
+
+}
+
+/* =========================
+LIGHTBOX
+========================= */
+
+.lightbox{
+
+```
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.85);
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:9999;
+```
+
+}
+
+.lightbox img{
+
+```
+max-width:90%;
+
+max-height:90%;
+
+border-radius:20px;
+```
+
+}
+
+/* =========================
+ESTIMATE BOX
+========================= */
+
+#estimate{
+
+```
+margin-top:20px;
+
+padding:15px;
+
+border-radius:12px;
+
+background:#FFF8E1;
+
+font-weight:700;
+
+text-align:center;
+```
+
+}
+
+/* =========================
+COUNTERS
+========================= */
+
+.counter{
+
+```
+font-size:3rem;
+
+font-weight:800;
+
+color:var(--secondary);
+```
+
+}
+
