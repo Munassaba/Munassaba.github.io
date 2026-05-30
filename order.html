@@ -1,53 +1,339 @@
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
+
 <head>
-    <meta charset="UTF-8">
-    <title>طلب حجز | مُناسبة</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .form-group { margin-bottom: 15px; text-align: right; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        form { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
-    </style>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>الحجز | مُناسبة</title>
+
+<meta name="description"
+      content="أرسل طلب الحجز الخاص بك عبر موقع مُناسبة.">
+
+<link rel="stylesheet"
+      href="style.css">
+```
+
 </head>
+
 <body>
 
+```
+<!-- NAVBAR -->
+
 <nav>
-    <ul>
-        <li><a href="index.html">الرئيسية</a></li>
-        <li><a href="products.html">المنتجات</a></li>
-        <li><a href="order.html">طلب حجز</a></li>
-    </ul>
+
+    <div class="nav-container">
+
+        <div class="logo">
+            مُناسبة
+        </div>
+
+        <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="products.html">المنتجات</a></li>
+            <li><a href="order.html">الحجز</a></li>
+            <li><a href="gallery.html">المعرض</a></li>
+            <li><a href="contact.html">اتصل بنا</a></li>
+        </ul>
+
+    </div>
+
 </nav>
 
-<div class="container">
-    <h2 style="text-align: center;">أرسل طلبك الآن</h2>
-    
-    <form>
-        <div class="form-group">
-            <label>الاسم الكامل:</label>
-            <input type="text" placeholder="أدخل اسمك">
-        </div>
-        <div class="form-group">
-            <label>نوع المناسبة:</label>
-            <select>
-                <option>عرس</option>
-                <option>وليمة / عقيقة</option>
-                <option>حفل تخرج</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>المعدات المطلوبة:</label>
-            <textarea rows="4" placeholder="مثال: 100 كرسي، 10 طاولات..."></textarea>
-        </div>
-        <button type="submit" class="btn btn-main" style="width: 100%; border: none; cursor: pointer;">إرسال الطلب</button>
-    </form>
+<!-- TITLE -->
 
-    <div style="text-align: center; margin-top: 30px;">
-        <p>أو تواصل معنا مباشرة عبر:</p>
-        <a href="https://wa.me/213552951953" class="btn btn-whatsapp">واتساب سريع</a>
+<section>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>طلب حجز</h2>
+
+            <p>
+                املأ المعلومات التالية وسيتم تحويلك مباشرة إلى واتساب.
+            </p>
+
+        </div>
+
     </div>
-</div>
+
+</section>
+
+<!-- NOTICE -->
+
+<section>
+
+    <div class="container">
+
+        <div class="notice">
+
+            ⚠ يشترط تقديم نسخة من بطاقة الهوية
+            كضمان عند استلام المعدات.
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- FORM -->
+
+<section>
+
+    <div class="container">
+
+        <form id="bookingForm">
+
+            <div class="form-group">
+
+                <label>الاسم الكامل</label>
+
+                <input type="text"
+                       id="name"
+                       required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>رقم الهاتف</label>
+
+                <input type="tel"
+                       id="phone"
+                       required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>البريد الإلكتروني</label>
+
+                <input type="email"
+                       id="email">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>نوع المناسبة</label>
+
+                <select id="event">
+
+                    <option>عرس</option>
+                    <option>وليمة</option>
+                    <option>عقيقة</option>
+                    <option>حفل تخرج</option>
+                    <option>اجتماع عائلي</option>
+                    <option>أخرى</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>تاريخ المناسبة</label>
+
+                <input type="date"
+                       id="date">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>عدد الكراسي</label>
+
+                <input type="number"
+                       id="chairs"
+                       min="0"
+                       value="0">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>عدد الطاولات</label>
+
+                <input type="number"
+                       id="tables"
+                       min="0"
+                       value="0">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>عدد المجمدات</label>
+
+                <input type="number"
+                       id="freezers"
+                       min="0"
+                       value="0">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>أواني الطبخ</label>
+
+                <textarea id="cooking"
+                          rows="3"
+                          placeholder="اذكر ما تحتاجه"></textarea>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>ملاحظات إضافية</label>
+
+                <textarea id="notes"
+                          rows="4"></textarea>
+
+            </div>
+
+            <button type="button"
+                    class="btn btn-whatsapp"
+                    onclick="sendWhatsApp()">
+
+                إرسال عبر واتساب
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+
+    <h3>مُناسبة</h3>
+
+    <p>
+        الهاتف:
+        +213552951953
+    </p>
+
+    <p>
+        البريد:
+        rrentforevent@gmail.com
+    </p>
+
+    <p>
+        Hai Aissa Toumache N°19
+        <br>
+        Cherarba - Eucalyptus - Alger
+    </p>
+
+    <p>
+        ساعات العمل:
+        08:00 - 16:00
+    </p>
+
+    <p>
+        يمكن إرسال طلبات الحجز على مدار الساعة.
+    </p>
+
+</footer>
+
+<!-- FLOATING WHATSAPP -->
+
+<a href="https://wa.me/213552951953"
+   target="_blank"
+   class="floating-whatsapp">
+
+    💬
+
+</a>
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+    function sendWhatsApp() {
+
+        let name =
+            document.getElementById("name").value;
+
+        let phone =
+            document.getElementById("phone").value;
+
+        let email =
+            document.getElementById("email").value;
+
+        let event =
+            document.getElementById("event").value;
+
+        let date =
+            document.getElementById("date").value;
+
+        let chairs =
+            document.getElementById("chairs").value;
+
+        let tables =
+            document.getElementById("tables").value;
+
+        let freezers =
+            document.getElementById("freezers").value;
+
+        let cooking =
+            document.getElementById("cooking").value;
+
+        let notes =
+            document.getElementById("notes").value;
+
+        let message =
+```
+
+`طلب حجز جديد
+
+الاسم: ${name}
+
+الهاتف: ${phone}
+
+البريد: ${email}
+
+نوع المناسبة: ${event}
+
+التاريخ: ${date}
+
+عدد الكراسي: ${chairs}
+
+عدد الطاولات: ${tables}
+
+عدد المجمدات: ${freezers}
+
+أواني الطبخ:
+${cooking}
+
+ملاحظات:
+${notes}`;
+
+```
+        let url =
+```
+
+"https://wa.me/213552951953?text="
+
+* encodeURIComponent(message);
+
+  ```
+        window.open(url, "_blank");
+
+    }
+  ```
+
+    </script>
 
 </body>
+
 </html>
