@@ -1,6 +1,16 @@
-// استبدل هذه القيم ببيانات مشروعك من Supabase -> Settings -> API
-const SUPABASE_URL = "https://wtrzqtlxtvbvkkyzkeea.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnpxdGx4dHZidmtreXprZWVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MTI5MTQsImV4cCI6MjA5NjM4ODkxNH0.YltjNexrvyq2SrFPPOhoI6SA9YCOOr0m6bWAVi-MExY";
+const SUPABASE_URL = "https://wtrzqtlxtvbvkkyzkeea.supabase.co"; 
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0cnpxdGx4dHZidmtreXprZWVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MTI5MTQsImV4cCI6MjA5NjM4ODkxNH0.YltjNexrvyq2SrFPPOhoI6SA9YCOOr0m6bWAVi-MExY";           
 
-// تهيئة العميل الخاص بـ Supabase
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// مصفوفة فحص لضمان الوصول للدالة الصحيحة مهما اختلف نوع الـ CDN
+let supabase;
+
+if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
+    // إذا كانت المكتبة محملة كـ Global Module مباشر
+    supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else if (typeof window.supabaseClient !== 'undefined') {
+    supabase = window.supabaseClient.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+    console.error("تعذر العثور على دالة تهيئة مكتبة Supabase! تأكد من ترتيب السكربتات.");
+}
