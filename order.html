@@ -4,433 +4,423 @@
 
 <head>
 
-```
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>الحجز | مُناسبة</title>
+    <title>الحجز | مُناسبة</title>
 
-<meta name="description"
-      content="أرسل طلب الحجز الخاص بك عبر موقع مُناسبة.">
+    <meta name="description" content="أرسل طلب الحجز الخاص بك عبر موقع مُناسبة.">
 
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-init.js"></script>
-```
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-init.js"></script>
 
 </head>
 
 <body>
 
-```
-<!-- NAVBAR -->
+    <!-- NAVBAR -->
 
-<nav>
+    <nav>
 
-    <div class="nav-container">
+        <div class="nav-container">
 
-        <div class="logo">
-            مُناسبة
-        </div>
+            <div class="logo">
+                مُناسبة
+            </div>
 
-        <ul>
-            <li><a href="index.html">الرئيسية</a></li>
-            <li><a href="products.html">المنتجات</a></li>
-            <li><a href="order.html">الحجز</a></li>
-            <li><a href="gallery.html">المعرض</a></li>
-            <li><a href="contact.html">اتصل بنا</a></li>
-        </ul>
-
-    </div>
-
-</nav>
-
-<!-- TITLE -->
-
-<section>
-
-    <div class="container">
-
-        <div class="section-title">
-
-            <h2>طلب حجز</h2>
-
-            <p>
-                املأ المعلومات التالية وسيتم تحويلك مباشرة إلى واتساب.
-            </p>
+            <ul>
+                <li><a href="index.html">الرئيسية</a></li>
+                <li><a href="products.html">المنتجات</a></li>
+                <li><a href="order.html">الحجز</a></li>
+                <li><a href="gallery.html">المعرض</a></li>
+                <li><a href="contact.html">اتصل بنا</a></li>
+                <li><a href="about.html">من نحن</a></li>
+            </ul>
 
         </div>
 
-    </div>
+    </nav>
 
-</section>
+    <!-- TITLE -->
 
-<!-- NOTICE -->
+    <section>
 
-<section>
+        <div class="container">
 
-    <div class="container">
+            <div class="section-title">
 
-        <div class="notice">
+                <h2>طلب حجز</h2>
 
-            ⚠ يشترط تقديم نسخة من بطاقة الهوية
-            كضمان عند استلام المعدات.
+                <p>
+                    املأ المعلومات التالية وسيتم تحويلك مباشرة إلى واتساب.
+                </p>
+
+            </div>
 
         </div>
 
+    </section>
+
+    <!-- NOTICE -->
+
+    <section>
+
+        <div class="container">
+
+            <div class="notice">
+
+                ⚠ يشترط تقديم نسخة من بطاقة الهوية
+                كضمان عند استلام المعدات.
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- FORM -->
+
+    <section>
+
+        <div class="container">
+
+            <form id="bookingForm">
+
+                <div class="form-group">
+
+                    <label>الاسم الكامل</label>
+
+                    <input type="text" id="name" required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>رقم الهاتف</label>
+
+                    <input type="tel" id="phone" required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>البريد الإلكتروني</label>
+
+                    <input type="email" id="email">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>نوع المناسبة</label>
+
+                    <select id="event">
+
+                        <option>عرس</option>
+                        <option>وليمة</option>
+                        <option>عقيقة</option>
+                        <option>حفل تخرج</option>
+                        <option>اجتماع عائلي</option>
+                        <option>أخرى</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>تاريخ المناسبة</label>
+
+                    <input type="date" id="date">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>عدد الكراسي</label>
+
+                    <input type="number" id="chairs" min="0" value="0">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>عدد الطاولات</label>
+
+                    <input type="number" id="tables" min="0" value="0">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>عدد المجمدات</label>
+
+                    <input type="number" id="freezers" min="0" value="0">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>أواني الطبخ</label>
+
+                    <textarea id="cooking" rows="3" placeholder="اذكر ما تحتاجه"></textarea>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">ملاحظات إضافية</label>
+                    <textarea id="notes" rows="4" placeholder="أي تفاصيل أو طلبات أخرى..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>كود التخفيض (إن وجد)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="discountCode" placeholder="أدخل كود الخصم">
+                        <button type="button" class="btn btn-main" onclick="applyDiscount()"
+                            style="padding: 10px 20px; border-radius: 10px;">تطبيق</button>
+                    </div>
+                    <span id="discountStatus" style="font-size: 0.9rem; font-weight: bold;"></span>
+                </div>
+
+                <div id="estimate">السعر التقديري: 0 دج</div>
+
+                <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
+
+                    <button type="button" onclick="saveToDatabaseOnly()" class="btn"
+                        style="background-color: var(--primary); color: white; width: 100%; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">
+                        💾 حفظ الطلب في قاعدة البيانات
+                    </button>
+
+                    <button type="button" onclick="sendWhatsAppOnly()" class="btn"
+                        style="background-color: #25D366; color: white; width: 100%; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">
+                        💬 إرسال الطلب عبر واتساب مباشر
+                    </button>
+
+                    <div id="dbStatusMessage"
+                        style="text-align: center; font-weight: bold; margin-top: 10px; padding: 10px; border-radius: 6px; display: none;">
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <h3>مُناسبة</h3>
+
+        <p>
+            الهاتف:
+            +213552951953
+        </p>
+
+        <p>
+            البريد:
+            rrentforevent@gmail.com
+        </p>
+
+        <p>
+            Hai Aissa Toumache N°19
+            <br>
+            Cherarba - Eucalyptus - Alger
+        </p>
+
+        <p>
+            ساعات العمل:
+            08:00 - 16:00
+        </p>
+
+        <p>
+            يمكن إرسال طلبات الحجز على مدار الساعة.
+        </p>
+
+    </footer>
+
+    <!-- FLOATING WHATSAPP -->
+
+    <a href="https://wa.me/213552951953" target="_blank" class="floating-whatsapp">
+
+        💬
+
+    </a>
+
+    <!-- JAVASCRIPT -->
+    <div style="margin-top: 20px; text-align: center;">
+        <button type="button" onclick="sendWhatsApp()" class="btn btn-main"
+            style="width: 100%; padding: 15px; font-size: 18px; font-weight: bold;">
+            🚀 تأكيد الحجز وإرسال عبر واتساب
+        </button>
     </div>
 
-</section>
-
-<!-- FORM -->
-
-<section>
-
-    <div class="container">
-
-        <form id="bookingForm">
-
-            <div class="form-group">
-
-                <label>الاسم الكامل</label>
-
-                <input type="text"
-                       id="name"
-                       required>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>رقم الهاتف</label>
-
-                <input type="tel"
-                       id="phone"
-                       required>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>البريد الإلكتروني</label>
-
-                <input type="email"
-                       id="email">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>نوع المناسبة</label>
-
-                <select id="event">
-
-                    <option>عرس</option>
-                    <option>وليمة</option>
-                    <option>عقيقة</option>
-                    <option>حفل تخرج</option>
-                    <option>اجتماع عائلي</option>
-                    <option>أخرى</option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>تاريخ المناسبة</label>
-
-                <input type="date"
-                       id="date">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>عدد الكراسي</label>
-
-                <input type="number"
-                       id="chairs"
-                       min="0"
-                       value="0">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>عدد الطاولات</label>
-
-                <input type="number"
-                       id="tables"
-                       min="0"
-                       value="0">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>عدد المجمدات</label>
-
-                <input type="number"
-                       id="freezers"
-                       min="0"
-                       value="0">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>أواني الطبخ</label>
-
-                <textarea id="cooking"
-                          rows="3"
-                          placeholder="اذكر ما تحتاجه"></textarea>
-
-            </div>
-
-            <div class="form-group">
-    <label for="notes">ملاحظات إضافية</label>
-    <textarea id="notes" rows="4" placeholder="أي تفاصيل أو طلبات أخرى..."></textarea>
-</div>
-
-<div class="form-group">
-    <label>كود التخفيض (إن وجد)</label>
-    <div style="display: flex; gap: 10px;">
-        <input type="text" id="discountCode" placeholder="أدخل كود الخصم">
-        <button type="button" class="btn btn-main" onclick="applyDiscount()" style="padding: 10px 20px; border-radius: 10px;">تطبيق</button>
-    </div>
-    <span id="discountStatus" style="font-size: 0.9rem; font-weight: bold;"></span>
-</div>
-
-<div id="estimate">السعر التقديري: 0 دج</div>
-
-<div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
-    
-    <button type="button" onclick="saveToDatabaseOnly()" class="btn" style="background-color: var(--primary); color: white; width: 100%; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">
-        💾 حفظ الطلب في قاعدة البيانات
-    </button>
-
-    <button type="button" onclick="sendWhatsAppOnly()" class="btn" style="background-color: #25D366; color: white; width: 100%; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">
-        💬 إرسال الطلب عبر واتساب مباشر
-    </button>
-
-    <div id="dbStatusMessage" style="text-align: center; font-weight: bold; margin-top: 10px; padding: 10px; border-radius: 6px; display: none;"></div>
-</div>
-
-        </form>
-
-    </div>
-
-</section>
-
-<!-- FOOTER -->
-
-<footer>
-
-    <h3>مُناسبة</h3>
-
-    <p>
-        الهاتف:
-        +213552951953
-    </p>
-
-    <p>
-        البريد:
-        rrentforevent@gmail.com
-    </p>
-
-    <p>
-        Hai Aissa Toumache N°19
-        <br>
-        Cherarba - Eucalyptus - Alger
-    </p>
-
-    <p>
-        ساعات العمل:
-        08:00 - 16:00
-    </p>
-
-    <p>
-        يمكن إرسال طلبات الحجز على مدار الساعة.
-    </p>
-
-</footer>
-
-<!-- FLOATING WHATSAPP -->
-
-<a href="https://wa.me/213552951953"
-   target="_blank"
-   class="floating-whatsapp">
-
-    💬
-
-</a>
-
-<!-- JAVASCRIPT -->
-<div style="margin-top: 20px; text-align: center;">
-    <button type="button" onclick="sendWhatsApp()" class="btn btn-main" style="width: 100%; padding: 15px; font-size: 18px; font-weight: bold;">
-        🚀 تأكيد الحجز وإرسال عبر واتساب
-    </button>
-</div>
-
-<script>
-    let currentDiscountPercent = 0;
-
-    // دالة تطبيق كود الخصم
-    async function applyDiscount() {
-        const codeInput = document.getElementById('discountCode');
-        const statusSpan = document.getElementById('discountStatus');
-        if(!codeInput || !codeInput.value.trim()) return;
-        const code = codeInput.value.trim();
-
-        try {
-            const { data, error } = await supabase.from('discounts').select('*').eq('code', code).eq('is_active', true).single();
-
-            if (error || !data) {
-                statusSpan.style.color = "red";
-                statusSpan.innerText = "كود الخصم غير صحيح أو منتهي الصلاحية.";
+    <script>
+        let currentDiscountPercent = 0;
+
+        // دالة تطبيق كود الخصم
+        async function applyDiscount() {
+            const codeInput = document.getElementById('discountCode');
+            const statusSpan = document.getElementById('discountStatus');
+            if (!codeInput || !codeInput.value.trim()) return;
+            const code = codeInput.value.trim();
+
+            try {
+                const { data, error } = await supabase.from('discounts').select('*').eq('code', code).eq('is_active', true).single();
+
+                if (error || !data) {
+                    statusSpan.style.color = "red";
+                    statusSpan.innerText = "كود الخصم غير صحيح أو منتهي الصلاحية.";
+                    currentDiscountPercent = 0;
+                } else {
+                    statusSpan.style.color = "green";
+                    statusSpan.innerText = `تم تطبيق الخصم بنجاح: ${data.discount_percent}%`;
+                    currentDiscountPercent = parseFloat(data.discount_percent);
+                }
+                calculateEstimate();
+            } catch (e) {
                 currentDiscountPercent = 0;
-            } else {
-                statusSpan.style.color = "green";
-                statusSpan.innerText = `تم تطبيق الخصم بنجاح: ${data.discount_percent}%`;
-                currentDiscountPercent = parseFloat(data.discount_percent);
+                calculateEstimate();
             }
-            calculateEstimate();
-        } catch(e) {
-            currentDiscountPercent = 0;
-            calculateEstimate();
-        }
-    }
-
-    // دالة حساب السعر التقديري
-    function calculateEstimate() {
-        const chairInput = document.getElementById("chairs");
-        const tableInput = document.getElementById("tables");
-        const freezerInput = document.getElementById("freezers");
-        const estimateBox = document.getElementById("estimate");
-        
-        if (!estimateBox) return 0;
-
-        const chairs = chairInput ? (parseInt(chairInput.value) || 0) : 0;
-        const tables = tableInput ? (parseInt(tableInput.value) || 0) : 0;
-        const freezers = freezerInput ? (parseInt(freezerInput.value) || 0) : 0;
-
-        let total = (chairs * 30) + (tables * 300) + (freezers * 2500);
-        if (currentDiscountPercent > 0) {
-            total = total - (total * (currentDiscountPercent / 100));
-        }
-        estimateBox.innerHTML = `السعر التقديري: ${Math.ceil(total)} دج`;
-        return total;
-    }
-
-    // الاستماع للتغييرات لتحديث السعر لحظياً
-    document.addEventListener("input", (e) => {
-        if(['chairs', 'tables', 'freezers'].includes(e.target.id)) {
-            calculateEstimate();
-        }
-    });
-
-    // 1️⃣ الزر الأول: دالة الحفظ في قاعدة البيانات فقط مع إظهار النتيجة
-    async function saveToDatabaseOnly() {
-        const nameEl = document.getElementById("name");
-        const phoneEl = document.getElementById("phone");
-        const statusBox = document.getElementById("dbStatusMessage");
-        
-        if(!nameEl || !phoneEl || !nameEl.value.trim() || !phoneEl.value.trim()) {
-            alert("يرجى ملء الاسم الكامل ورقم الهاتف أولاً لحفظ الطلب.");
-            return;
         }
 
-        statusBox.style.display = "block";
-        statusBox.style.backgroundColor = "#e1f5fe";
-        statusBox.style.color = "#0288d1";
-        statusBox.innerText = "جاري إرسال البيانات وحفظ الطلب في النظام...";
+        // دالة حساب السعر التقديري
+        function calculateEstimate() {
+            const chairInput = document.getElementById("chairs");
+            const tableInput = document.getElementById("tables");
+            const freezerInput = document.getElementById("freezers");
+            const estimateBox = document.getElementById("estimate");
 
-        const name = nameEl.value.trim();
-        const phone = phoneEl.value.trim();
-        const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
-        const event = document.getElementById("event") ? document.getElementById("event").value : "عام";
-        const date = document.getElementById("date") ? document.getElementById("date").value : "";
-        const chairs = document.getElementById("chairs") ? (parseInt(document.getElementById("chairs").value) || 0) : 0;
-        const tables = document.getElementById("tables") ? (parseInt(document.getElementById("tables").value) || 0) : 0;
-        const freezers = document.getElementById("freezers") ? (parseInt(document.getElementById("freezers").value) || 0) : 0;
-        const cooking = document.getElementById("cooking") ? document.getElementById("cooking").value : "";
-        const notes = document.getElementById("notes") ? document.getElementById("notes").value : "";
-        const discountCode = document.getElementById("discountCode") ? document.getElementById("discountCode").value.trim() : "";
-        
-        const finalPrice = calculateEstimate();
+            if (!estimateBox) return 0;
 
-        try {
-            if (typeof supabase === 'undefined') {
-                throw new Error("اتصال Supabase غير معرف بالمتصفح.");
+            const chairs = chairInput ? (parseInt(chairInput.value) || 0) : 0;
+            const tables = tableInput ? (parseInt(tableInput.value) || 0) : 0;
+            const freezers = freezerInput ? (parseInt(freezerInput.value) || 0) : 0;
+
+            let total = (chairs * 30) + (tables * 300) + (freezers * 2500);
+            if (currentDiscountPercent > 0) {
+                total = total - (total * (currentDiscountPercent / 100));
+            }
+            estimateBox.innerHTML = `السعر التقديري: ${Math.ceil(total)} دج`;
+            return total;
+        }
+
+        // الاستماع للتغييرات لتحديث السعر لحظياً
+        document.addEventListener("input", (e) => {
+            if (['chairs', 'tables', 'freezers'].includes(e.target.id)) {
+                calculateEstimate();
+            }
+        });
+
+        // 1️⃣ الزر الأول: دالة الحفظ في قاعدة البيانات فقط مع إظهار النتيجة
+        async function saveToDatabaseOnly() {
+            const nameEl = document.getElementById("name");
+            const phoneEl = document.getElementById("phone");
+            const statusBox = document.getElementById("dbStatusMessage");
+
+            if (!nameEl || !phoneEl || !nameEl.value.trim() || !phoneEl.value.trim()) {
+                alert("يرجى ملء الاسم الكامل ورقم الهاتف أولاً لحفظ الطلب.");
+                return;
             }
 
-            const { error } = await supabase.from('orders').insert([{
-                customer_name: name, 
-                customer_phone: phone, 
-                customer_email: email,
-                event_type: event, 
-                event_date: date, 
-                chairs_qty: chairs,
-                tables_qty: tables, 
-                freezers_qty: freezers, 
-                cooking_notes: cooking,
-                additional_notes: notes, 
-                total_price: finalPrice,
-                discount_code_used: currentDiscountPercent > 0 ? discountCode : null, 
-                status: 'pending'
-            }]);
-            
-            if (error) throw error;
+            statusBox.style.display = "block";
+            statusBox.style.backgroundColor = "#e1f5fe";
+            statusBox.style.color = "#0288d1";
+            statusBox.innerText = "جاري إرسال البيانات وحفظ الطلب في النظام...";
 
-            // في حال النجاح التام
-            statusBox.style.backgroundColor = "#d4edda";
-            statusBox.style.color = "#155724";
-            statusBox.innerText = "✅ تم حفظ طلب حجزك بنجاح في قاعدة البيانات الإدارية!";
-            
-        } catch (err) {
-            console.error("Database Error:", err);
-            statusBox.style.backgroundColor = "#f8d7da";
-            statusBox.style.color = "#721c24";
-            statusBox.innerText = `❌ فشل الحفظ: ${err.message || "تأكد من إدخال الحقول المطلوبة"}`;
+            const name = nameEl.value.trim();
+            const phone = phoneEl.value.trim();
+            const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
+            const event = document.getElementById("event") ? document.getElementById("event").value : "عام";
+            const date = document.getElementById("date") ? document.getElementById("date").value : "";
+            const chairs = document.getElementById("chairs") ? (parseInt(document.getElementById("chairs").value) || 0) : 0;
+            const tables = document.getElementById("tables") ? (parseInt(document.getElementById("tables").value) || 0) : 0;
+            const freezers = document.getElementById("freezers") ? (parseInt(document.getElementById("freezers").value) || 0) : 0;
+            const cooking = document.getElementById("cooking") ? document.getElementById("cooking").value : "";
+            const notes = document.getElementById("notes") ? document.getElementById("notes").value : "";
+            const discountCode = document.getElementById("discountCode") ? document.getElementById("discountCode").value.trim() : "";
+
+            const finalPrice = calculateEstimate();
+
+            try {
+                if (typeof supabase === 'undefined') {
+                    throw new Error("اتصال Supabase غير معرف بالمتصفح.");
+                }
+
+                const { error } = await supabase.from('orders').insert([{
+                    customer_name: name,
+                    customer_phone: phone,
+                    customer_email: email || null,
+                    event_type: event,
+                    event_date: date || null,
+                    chairs_qty: chairs,
+                    tables_qty: tables,
+                    freezers_qty: freezers,
+                    cooking_notes: cooking || null,
+                    additional_notes: notes || null,
+                    total_price: finalPrice,
+                    discount_code_used: currentDiscountPercent > 0 ? discountCode : null,
+                    status: 'pending'
+                }]);
+
+                if (error) throw error;
+
+                // في حال النجاح التام
+                statusBox.style.backgroundColor = "#d4edda";
+                statusBox.style.color = "#155724";
+                statusBox.innerText = "✅ تم حفظ طلب حجزك بنجاح في قاعدة البيانات الإدارية!";
+
+            } catch (err) {
+                console.error("Database Error:", err);
+                statusBox.style.backgroundColor = "#f8d7da";
+                statusBox.style.color = "#721c24";
+                statusBox.innerText = `❌ فشل الحفظ: ${err.message || "تأكد من إدخال الحقول المطلوبة"}`;
+            }
         }
-    }
 
-    // 2️⃣ الزر الثاني: دالة الإرسال إلى الواتساب فقط دون التأثير على الجداول
-    function sendWhatsAppOnly() {
-        const nameEl = document.getElementById("name");
-        const phoneEl = document.getElementById("phone");
-        
-        if(!nameEl || !phoneEl || !nameEl.value.trim() || !phoneEl.value.trim()) {
-            alert("يرجى ملء الاسم الكامل ورقم الهاتف أولاً لصياغة رسالة الواتساب.");
-            return;
+        // 2️⃣ الزر الثاني: دالة الإرسال إلى الواتساب فقط دون التأثير على الجداول
+        function sendWhatsAppOnly() {
+            const nameEl = document.getElementById("name");
+            const phoneEl = document.getElementById("phone");
+
+            if (!nameEl || !phoneEl || !nameEl.value.trim() || !phoneEl.value.trim()) {
+                alert("يرجى ملء الاسم الكامل ورقم الهاتف أولاً لصياغة رسالة الواتساب.");
+                return;
+            }
+
+            const name = nameEl.value.trim();
+            const phone = phoneEl.value.trim();
+            const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
+            const event = document.getElementById("event") ? document.getElementById("event").value : "عام";
+            const date = document.getElementById("date") ? document.getElementById("date").value : "";
+            const chairs = document.getElementById("chairs") ? (parseInt(document.getElementById("chairs").value) || 0) : 0;
+            const tables = document.getElementById("tables") ? (parseInt(document.getElementById("tables").value) || 0) : 0;
+            const freezers = document.getElementById("freezers") ? (parseInt(document.getElementById("freezers").value) || 0) : 0;
+            const cooking = document.getElementById("cooking") ? document.getElementById("cooking").value : "";
+            const notes = document.getElementById("notes") ? document.getElementById("notes").value : "";
+            const discountCode = document.getElementById("discountCode") ? document.getElementById("discountCode").value.trim() : "";
+
+            const finalPrice = calculateEstimate();
+
+            let message = `طلب حجز جديد عبر الموقع 📥\n\nالاسم: ${name}\nالهاتف: ${phone}\nنوع المناسبة: ${event}\nالتاريخ: ${date}\nعدد الكراسي: ${chairs}\nعدد الطاولات: ${tables}\nعدد المجمدات: ${freezers}\n`;
+            if (cooking) message += `أواني الطبخ:\n${cooking}\n`;
+            if (notes) message += `ملاحظات:\n${notes}\n`;
+            if (currentDiscountPercent > 0) message += `كود الخصم: ${discountCode} (${currentDiscountPercent}%)\n`;
+            message += `\nالسعر التقديري النهائي: ${Math.ceil(finalPrice)} دج`;
+
+            window.open("https://wa.me/213552951953?text=" + encodeURIComponent(message), "_blank");
         }
 
-        const name = nameEl.value.trim();
-        const phone = phoneEl.value.trim();
-        const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
-        const event = document.getElementById("event") ? document.getElementById("event").value : "عام";
-        const date = document.getElementById("date") ? document.getElementById("date").value : "";
-        const chairs = document.getElementById("chairs") ? (parseInt(document.getElementById("chairs").value) || 0) : 0;
-        const tables = document.getElementById("tables") ? (parseInt(document.getElementById("tables").value) || 0) : 0;
-        const freezers = document.getElementById("freezers") ? (parseInt(document.getElementById("freezers").value) || 0) : 0;
-        const cooking = document.getElementById("cooking") ? document.getElementById("cooking").value : "";
-        const notes = document.getElementById("notes") ? document.getElementById("notes").value : "";
-        const discountCode = document.getElementById("discountCode") ? document.getElementById("discountCode").value.trim() : "";
-        
-        const finalPrice = calculateEstimate();
-
-        let message = `طلب حجز جديد عبر الموقع 📥\n\nالاسم: ${name}\nالهاتف: ${phone}\nنوع المناسبة: ${event}\nالتاريخ: ${date}\nعدد الكراسي: ${chairs}\nعدد الطاولات: ${tables}\nعدد المجمدات: ${freezers}\n`;
-        if(cooking) message += `أواني الطبخ:\n${cooking}\n`;
-        if(notes) message += `ملاحظات:\n${notes}\n`;
-        if(currentDiscountPercent > 0) message += `كود الخصم: ${discountCode} (${currentDiscountPercent}%)\n`;
-        message += `\nالسعر التقديري النهائي: ${Math.ceil(finalPrice)} دج`;
-
-        window.open("https://wa.me/213552951953?text=" + encodeURIComponent(message), "_blank");
-    }
-</script>
-<script src="main.js"></script>
+        // 3️⃣ الزر الثالث: دالة الحفظ في قاعدة البيانات ثم الإرسال عبر واتساب
+        async function sendWhatsApp() {
+            await saveToDatabaseOnly();
+            sendWhatsAppOnly();
+        }
+    </script>
+    <script src="main.js"></script>
 </body>
+
 </html>
