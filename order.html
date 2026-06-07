@@ -260,93 +260,115 @@
 <!-- JAVASCRIPT -->
 
 <script>
+        let currentDiscountPercent = 0;
 
-<script>
-    let currentDiscountPercent = 0;
+        async function applyDiscount() {
+            const codeInput = document.getElementById('discountCode');
+            const statusSpan = document.getElementById('discountStatus');
+            if(!codeInput || !codeInput.value.trim()) return;
+            const code = codeInput.value.trim();
 
-    async function applyDiscount() {
-        const code = document.getElementById('discountCode').value.trim();
-        const statusSpan = document.getElementById('discountStatus');
-        if(!code) return;
+            try {
+                const { data, error } = await supabase.from('discounts').select('*').eq('code', code).eq('is_active', true).single();
 
-        const { data, error } = await supabase.from('discounts').select('*').eq('code', code).eq('is_active', true).single();
-
-        if (error || !data) {
-            statusSpan.style.color = "red";
-            statusSpan.innerText = "كود الخصم غير صحيح أو منتهي الصلاحية.";
-            currentDiscountPercent = 0;
-        } else {
-            statusSpan.style.color = "green";
-            statusSpan.innerText = `تم تطبيق الخصم بنجاح: ${data.discount_percent}%`;
-            currentDiscountPercent = parseFloat(data.discount_percent);
-        }
-        calculateEstimate();
-    }
-
-    function calculateEstimate() {
-        const chairs = parseInt(document.getElementById("chairs").value) || 0;
-        const tables = parseInt(document.getElementById("tables").value) || 0;
-        const freezers = parseInt(document.getElementById("freezers").value) || 0;
-        const estimateBox = document.getElementById("estimate");
-        if (!estimateBox) return;
-
-        let total = (chairs * 30) + (tables * 300) + (freezers * 2500);
-        if (currentDiscountPercent > 0) {
-            total = total - (total * (currentDiscountPercent / 100));
-        }
-        estimateBox.innerHTML = `السعر التقديري: ${Math.ceil(total)} دج`;
-        return total;
-    }
-
-    document.addEventListener("input", (e) => {
-        if(['chairs', 'tables', 'freezers'].includes(e.target.id)) {
-            calculateEstimate();
-        }
-    });
-
-    async function sendWhatsApp() {
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const email = document.getElementById("email").value;
-        const event = document.getElementById("event").value;
-        const date = document.getElementById("date").value;
-        const chairs = parseInt(document.getElementById("chairs").value) || 0;
-        const tables = parseInt(document.getElementById("tables").value) || 0;
-        const freezers = parseInt(document.getElementById("freezers").value) || 0;
-        const cooking = document.getElementById("cooking").value;
-        const notes = document.getElementById("notes").value;
-        const discountCode = document.getElementById("discountCode").value.trim();
-        
-        if(!name || !phone) {
-            alert("يرجى ملء الاسم الكامل ورقم الهاتف أولاً.");
-            return;
+                if (error || !data) {
+                    statusSpan.style.color = "red";
+                    statusSpan.innerText = "كود الخصم غير صحيح أو منتهي الصلاحية.";
+                    currentDiscountPercent = 0;
+                } else {
+                    statusSpan.style.color = "green";
+                    statusSpan.innerText = `تم تطبيق الخصم بنجاح: ${data.discount_percent}%`;
+                    currentDiscountPercent = parseFloat(data.discount_percent);
+                }
+                calculateEstimate();
+            } catch(e) {
+                currentDiscountPercent = 0;
+                calculateEstimate();
+            }
         }
 
-        const finalPrice = calculateEstimate();
+        function calculateEstimate() {
+            const chairInput = document.getElementById("chairs");
+            const tableInput = document.getElementById("tables");
+            const freezerInput = document.getElementById("freezers");
+            const estimateBox = document.getElementById("estimate");
+            
+            if (!estimateBox) return 0;
 
-        // حفظ في Supabase
-        const { error } = await supabase.from('orders').insert([{
-            customer_name: name, customer_phone: phone, customer_email: email,
-            event_type: event, event_date: date, chairs_qty: chairs,
-            tables_qty: tables, freezers_qty: freezers, cooking_notes: cooking,
-            additional_notes: notes, total_price: finalPrice,
-            discount_code_used: currentDiscountPercent > 0 ? discountCode : null, status: 'pending'
-        }]);
+            const chairs = chairInput ? (parseInt(chairInput.value) || 0) : 0;
+            const tables = tableInput ? (parseInt(tableInput.value) || 0) : 0;
+            const freezers = freezerInput ? (parseInt(freezerInput.value) || 0) : 0;
 
-        if (error) {
-            console.error("خطأ في قاعدة البيانات:", error);
+            let total = (chairs * 30) + (tables * 300) + (freezers * 2500);
+            if (currentDiscountPercent > 0) {
+                total = total - (total * (currentDiscountPercent / 100));
+            }
+            estimateBox.innerHTML = `السعر التقديري: ${Math.ceil(total)} دج`;
+            return total;
         }
 
-        // إرسال واتساب
-        let message = `طلب حجز جديد عبر الموقع 📥\n\nالاسم: ${name}\nالهاتف: ${phone}\nنوع المناسبة: ${event}\nالتاريخ: ${date}\nعدد الكراسي: ${chairs}\nعدد الطاولات: ${tables}\nعدد المجمدات: ${freezers}\n`;
-        if(cooking) message += `أواني الطبخ:\n${cooking}\n`;
-        if(notes) message += `ملاحظات:\n${notes}\n`;
-        if(currentDiscountPercent > 0) message += `كود الخصم: ${discountCode} (${currentDiscountPercent}%)\n`;
-        message += `\nالسعر التقديري النهائي: ${Math.ceil(finalPrice)} دج`;
+        document.addEventListener("input", (e) => {
+            if(['chairs', 'tables', 'freezers'].includes(e.target.id)) {
+                calculateEstimate();
+            }
+        });
 
-        window.open("https://wa.me/213552951953?text=" + encodeURIComponent(message), "_blank");
-    }
-</script>
+        async function sendWhatsApp() {
+            const nameEl = document.getElementById("name");
+            const phoneEl = document.getElementById("phone");
+            
+            if(!nameEl || !phoneEl || !nameEl.value.trim() || !phoneEl.value.trim()) {
+                alert("يرجى ملء الاسم الكامل ورقم الهاتف أولاً.");
+                return;
+            }
+
+            const name = nameEl.value.trim();
+            const phone = phoneEl.value.trim();
+            const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
+            const event = document.getElementById("event") ? document.getElementById("event").value : "عام";
+            const date = document.getElementById("date") ? document.getElementById("date").value : "";
+            const chairs = document.getElementById("chairs") ? (parseInt(document.getElementById("chairs").value) || 0) : 0;
+            const tables = document.getElementById("tables") ? (parseInt(document.getElementById("tables").value) || 0) : 0;
+            const freezers = document.getElementById("freezers") ? (parseInt(document.getElementById("freezers").value) || 0) : 0;
+            const cooking = document.getElementById("cooking") ? document.getElementById("cooking").value : "";
+            const notes = document.getElementById("notes") ? document.getElementById("notes").value : "";
+            const discountCode = document.getElementById("discountCode") ? document.getElementById("discountCode").value.trim() : "";
+            
+            const finalPrice = calculateEstimate();
+
+            // إرسال البيانات مباشرة لقاعدة البيانات
+            try {
+                const { error } = await supabase.from('orders').insert([{
+                    customer_name: name, 
+                    customer_phone: phone, 
+                    customer_email: email,
+                    event_type: event, 
+                    event_date: date, 
+                    chairs_qty: chairs,
+                    tables_qty: tables, 
+                    freezers_qty: freezers, 
+                    cooking_notes: cooking,
+                    additional_notes: notes, 
+                    total_price: finalPrice,
+                    discount_code_used: currentDiscountPercent > 0 ? discountCode : null, 
+                    status: 'pending'
+                }]);
+                
+                if (error) console.error("خطأ أثناء الحفظ الفعلي:", error);
+            } catch (err) {
+                console.error("فشل إرسال الطلب داخلياً:", err);
+            }
+
+            // المتابعة الفورية إلى تطبيق الواتساب لإكمال الطلب نصياً مع العميل
+            let message = `طلب حجز جديد عبر الموقع 📥\n\nالاسم: ${name}\nالهاتف: ${phone}\nنوع المناسبة: ${event}\nالتاريخ: ${date}\nعدد الكراسي: ${chairs}\nعدد الطاولات: ${tables}\nعدد المجمدات: ${freezers}\n`;
+            if(cooking) message += `أواني الطبخ:\n${cooking}\n`;
+            if(notes) message += `ملاحظات:\n${notes}\n`;
+            if(currentDiscountPercent > 0) message += `كود الخصم: ${discountCode} (${currentDiscountPercent}%)\n`;
+            message += `\nالسعر التقديري النهائي: ${Math.ceil(finalPrice)} دج`;
+
+            window.open("https://wa.me/213552951953?text=" + encodeURIComponent(message), "_blank");
+        }
+    </script>
 
 
 </body>
