@@ -3,7 +3,10 @@
 <html lang="ar" dir="rtl">
 
 <head>
-
+      
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-init.js"></script>
 ```
 <meta charset="UTF-8">
 
@@ -69,153 +72,10 @@
 <!-- PRODUCTS -->
 
 <section>
-
     <div class="container">
-
-        <div class="grid">
-
-            <!-- CHAIR -->
-
-            <div class="card">
-
-                <img src="images/chair.jpg"
-                     alt="كرسي بلاستيكي">
-
-                <div class="card-content">
-
-                    <h3>كرسي بلاستيكي</h3>
-
-                    <p>
-                        مناسب للأعراس والحفلات
-                        والتجمعات العائلية.
-                    </p>
-
-                    <p>
-                        <strong>
-                            30 دج / يوم
-                        </strong>
-                    </p>
-
-                    <a href="order.html"
-                       class="btn btn-main">
-
-                        احجز الآن
-
-                    </a>
-
-                </div>
-
+        <div class="grid" id="products-container">
             </div>
-
-            <!-- TABLE -->
-
-            <div class="card">
-
-                <img src="images/table.jpg"
-                     alt="طاولة مستطيلة">
-
-                <div class="card-content">
-
-                    <h3>طاولة مستطيلة</h3>
-
-                    <p>
-                        مثالية للولائم
-                        والتجمعات الكبيرة.
-                    </p>
-
-                    <p>
-
-                        <strong>
-                            300 دج / يوم
-                        </strong>
-
-                    </p>
-
-                    <a href="order.html"
-                       class="btn btn-main">
-
-                        احجز الآن
-
-                    </a>
-
-                </div>
-
-            </div>
-
-            <!-- FREEZER -->
-
-            <div class="card">
-
-                <img src="images/freezer.jpg"
-                     alt="مجمد">
-
-                <div class="card-content">
-
-                    <h3>مجمد</h3>
-
-                    <p>
-                        للحفاظ على المشروبات
-                        والأطعمة باردة أثناء المناسبة.
-                    </p>
-
-                    <p>
-
-                        <strong>
-                            2500 دج / يوم
-                        </strong>
-
-                    </p>
-
-                    <a href="order.html"
-                       class="btn btn-main">
-
-                        احجز الآن
-
-                    </a>
-
-                </div>
-
-            </div>
-
-            <!-- COOKING -->
-
-            <div class="card">
-
-                <img src="images/cooking.jpg"
-                     alt="أواني الطبخ">
-
-                <div class="card-content">
-
-                    <h3>أواني الطبخ</h3>
-
-                    <p>
-                        مجموعة متنوعة من أواني الطبخ
-                        حسب احتياجات المناسبة.
-                    </p>
-
-                    <p>
-
-                        <strong>
-                            السعر حسب الطلب
-                        </strong>
-
-                    </p>
-
-                    <a href="order.html"
-                       class="btn btn-main">
-
-                        احجز الآن
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
     </div>
-
 </section>
 
 <!-- NOTICE -->
@@ -307,7 +167,32 @@
 
 </a>
 ```
+<script>
+    async function loadProducts() {
+        const container = document.getElementById('products-container');
+        const { data: products, error } = await supabase.from('products').select('*');
 
+        if (error) {
+            console.error('Error fetching products:', error);
+            return;
+        }
+
+        container.innerHTML = products.map(product => `
+            <div class="card">
+                <img src="${product.image_url || 'images/default.jpg'}" alt="${product.title}">
+                <div class="card-content">
+                    <h3>${product.title}</h3>
+                    <p>${product.description || ''}</p>
+                    <p><strong>${product.price > 0 ? product.price + ' دج / يوم' : 'السعر حسب الطلب'}</strong></p>
+                    <a href="order.html" class="btn btn-main">احجز الآن</a>
+                </div>
+            </div>
+        `).join('');
+    }
+    document.addEventListener('DOMContentLoaded', loadProducts);
+</script>
+
+     
 </body>
 
 </html>
