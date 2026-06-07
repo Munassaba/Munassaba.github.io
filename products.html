@@ -165,29 +165,40 @@
 
 </a>
 ```
-<script>
+<div id="products-container" class="grid">
+        </div>
+
+    <script>
         async function loadProducts() {
             const container = document.getElementById('products-container');
             if (!container) return;
 
-            container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; font-weight:bold; padding:20px;">جاري جلب المعدات من قاعدة البيانات...</p>';
+            container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; font-weight: bold; padding: 20px;">جاري تحميل التجهيزات من قاعدة البيانات...</p>';
 
             try {
-                // جلب البيانات من جدول products
+                if (typeof supabase === 'undefined') {
+                    throw new Error("مكتبة Supabase لم يتم شحنها بشكل صحيح من الـ CDN.");
+                }
+
+                // جلب المنتجات من جدول products
                 const { data: products, error } = await supabase.from('products').select('*');
 
                 if (error) throw error;
 
                 if (!products || products.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding:20px;">لا توجد منتجات معروضة حالياً في قاعدة البيانات.</p>';
+                    container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 20px;">لا توجد منتجات معروضة حالياً في قاعدة البيانات.</p>';
                     return;
                 }
 
+                // بناء كروت المنتجات ديناميكياً مع زر احجز الآن
                 container.innerHTML = products.map(product => {
                     let priceText = product.price > 0 ? `${product.price} دج / يوم` : 'السعر حسب الطلب';
+                    if (product.price_type === 'order' || product.price == 0) {
+                        priceText = 'السعر حسب الطلب';
+                    }
+
                     let imgSrc = product.image_url ? product.image_url : 'images/chair.jpg';
 
-                    // إجبار الكرت على الظهور لتفادي مشكلة الـ opacity:0 القادمة من الأنميشن
                     return `
                     <div class="card show" style="opacity: 1 !important; transform: translateY(0) !important; visibility: visible !important;">
                         <img src="${imgSrc}" alt="${product.title}" onerror="this.src='images/chair.jpg'">
@@ -201,24 +212,23 @@
                     `;
                 }).join('');
 
+                // إدراج ملف main.js برمجياً بعد تحميل الكروت لضمان عدم حجبها بالتأثيرات
+                const mainScript = document.createElement('script');
+                mainScript.src = 'main.js';
+                document.body.appendChild(mainScript);
+
             } catch (err) {
-                console.error('Connection Error:', err);
+                console.error('Supabase Connection Error:', err);
                 container.innerHTML = `
                 <div style="text-align:center; grid-column: 1/-1; color: red; padding: 20px;">
-                    <p>فشل الاتصال الفوري بقاعدة البيانات.</p>
-                    <small dir="ltr" style="display:block; margin-top:10px; color:#666;">${err.message || err}</small>
+                    <p>تعذر الاتصال الفوري بقاعدة البيانات الفورية للموقع.</p>
+                    <small dir="ltr" style="display:block; margin-top:5px; color:#c0392b;">${err.message || err}</small>
                 </div>`;
             }
         }
 
-        // تشغيل فوري بمجرد جاهزية مستندات الصفحة
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadProducts);
-        } else {
-            loadProducts();
-        }
+        // تشغيل الدالة فور تحميل نافذة المتصفح
+        window.addEventListener('load', loadProducts);
     </script>
-     
 </body>
-
 </html>
