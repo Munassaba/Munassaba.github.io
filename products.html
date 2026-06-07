@@ -168,28 +168,63 @@
 <script>
     async function loadProducts() {
         const container = document.getElementById('products-container');
-        const { data: products, error } = await supabase.from('products').select('*');
+        
+        // إظهار رسالة تحميل مؤقتة للتأكد من أن السكريبت يعمل
+        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">جاري تحميل المنتجات من قاعدة البيانات...</p>';
 
-        if (error) {
-            console.error('Error fetching products:', error);
-            return;
-        }
+        try {
+            // جلب البيانات من جدول products
+            const { data: products, error } = await supabase
+                .from('products')
+                .select('*');
 
-        container.innerHTML = products.map(product => `
-            <div class="card">
-                <img src="${product.image_url || 'images/default.jpg'}" alt="${product.title}">
-                <div class="card-content">
-                    <h3>${product.title}</h3>
-                    <p>${product.description || ''}</p>
-                    <p><strong>${product.price > 0 ? product.price + ' دج / يوم' : 'السعر حسب الطلب'}</strong></p>
-                    <a href="order.html" class="btn btn-main">احجز الآن</a>
+            if (error) {
+                throw error;
+            }
+
+            if (!products || products.length === 0) {
+                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">لا توجد منتجات حالياً في قاعدة البيانات.</p>';
+                return;
+            }
+
+            // بناء الكروت ديناميكياً مع زر الحجز
+            container.innerHTML = products.map(product => {
+                // التأكد من السعر ونوع الحساب
+                let priceText = product.price > 0 ? `${product.price} دج / يوم` : 'السعر حسب الطلب';
+                if (product.price_type === 'order' || product.price == 0) {
+                    priceText = 'السعر حسب الطلب';
+                }
+
+                // حل مشكلة اختفاء الصورة إذا كان المسار فارغاً
+                let imgSrc = product.image_url ? product.image_url : 'images/default.jpg';
+
+                return `
+                    <div class="card show">
+                        <img src="${imgSrc}" alt="${product.title}" onerror="this.src='images/chair.jpg'">
+                        <div class="card-content">
+                            <h3>${product.title}</h3>
+                            <p>${product.description || ''}</p>
+                            <p><strong>${priceText}</strong></p>
+                            <a href="order.html" class="btn btn-main" style="display: inline-block; text-align: center;">احجز الآن</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+        } catch (err) {
+            console.error('Supabase Error:', err);
+            container.innerHTML = `
+                <div style="text-align:center; grid-column: 1/-1; color: red;">
+                    <p>حدث خطأ أثناء الاتصال بقاعدة البيانات.</p>
+                    <small dir="ltr">${err.message || err}</small>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }
     }
+
+    // تشغيل الدالة فور تحميل الصفحة
     document.addEventListener('DOMContentLoaded', loadProducts);
 </script>
-
      
 </body>
 
