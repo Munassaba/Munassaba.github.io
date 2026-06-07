@@ -258,10 +258,10 @@
 </a>
 
 <!-- JAVASCRIPT -->
-
 <script>
         let currentDiscountPercent = 0;
 
+        // دالة تطبيق كود الخصم الفوري للزبون
         async function applyDiscount() {
             const codeInput = document.getElementById('discountCode');
             const statusSpan = document.getElementById('discountStatus');
@@ -287,6 +287,7 @@
             }
         }
 
+        // دالة حساب السعر التقديري للمعدات المطلوبة
         function calculateEstimate() {
             const chairInput = document.getElementById("chairs");
             const tableInput = document.getElementById("tables");
@@ -307,12 +308,14 @@
             return total;
         }
 
+        // الاستماع للتغيرات في المدخلات لتحديث السعر التقديري لحظياً
         document.addEventListener("input", (e) => {
             if(['chairs', 'tables', 'freezers'].includes(e.target.id)) {
                 calculateEstimate();
             }
         });
 
+        // دالة الحفظ في قاعدة البيانات والإرسال المباشر للواتساب
         async function sendWhatsApp() {
             const nameEl = document.getElementById("name");
             const phoneEl = document.getElementById("phone");
@@ -336,30 +339,32 @@
             
             const finalPrice = calculateEstimate();
 
-            // إرسال البيانات مباشرة لقاعدة البيانات
+            // 1. محاولة حفظ الحجز الفعلي داخل قاعدة بيانات Supabase أولاً
             try {
-                const { error } = await supabase.from('orders').insert([{
-                    customer_name: name, 
-                    customer_phone: phone, 
-                    customer_email: email,
-                    event_type: event, 
-                    event_date: date, 
-                    chairs_qty: chairs,
-                    tables_qty: tables, 
-                    freezers_qty: freezers, 
-                    cooking_notes: cooking,
-                    additional_notes: notes, 
-                    total_price: finalPrice,
-                    discount_code_used: currentDiscountPercent > 0 ? discountCode : null, 
-                    status: 'pending'
-                }]);
-                
-                if (error) console.error("خطأ أثناء الحفظ الفعلي:", error);
+                if (typeof supabase !== 'undefined') {
+                    const { error } = await supabase.from('orders').insert([{
+                        customer_name: name, 
+                        customer_phone: phone, 
+                        customer_email: email,
+                        event_type: event, 
+                        event_date: date, 
+                        chairs_qty: chairs,
+                        tables_qty: tables, 
+                        freezers_qty: freezers, 
+                        cooking_notes: cooking,
+                        additional_notes: notes, 
+                        total_price: finalPrice,
+                        discount_code_used: currentDiscountPercent > 0 ? discountCode : null, 
+                        status: 'pending'
+                    }]);
+                    
+                    if (error) console.error("Database Insert Error:", error);
+                }
             } catch (err) {
-                console.error("فشل إرسال الطلب داخلياً:", err);
+                console.error("فشلت عملية الحفظ الاحتياطية في الجداول:", err);
             }
 
-            // المتابعة الفورية إلى تطبيق الواتساب لإكمال الطلب نصياً مع العميل
+            // 2. صياغة النص وتحويل المستخدم مباشرة لتطبيق واتساب لإكمال الحجز مع الإدارة
             let message = `طلب حجز جديد عبر الموقع 📥\n\nالاسم: ${name}\nالهاتف: ${phone}\nنوع المناسبة: ${event}\nالتاريخ: ${date}\nعدد الكراسي: ${chairs}\nعدد الطاولات: ${tables}\nعدد المجمدات: ${freezers}\n`;
             if(cooking) message += `أواني الطبخ:\n${cooking}\n`;
             if(notes) message += `ملاحظات:\n${notes}\n`;
@@ -369,8 +374,7 @@
             window.open("https://wa.me/213552951953?text=" + encodeURIComponent(message), "_blank");
         }
     </script>
-
-
+    
+    <script src="main.js"></script>
 </body>
-
 </html>
