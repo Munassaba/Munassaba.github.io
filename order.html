@@ -15,8 +15,9 @@
 <meta name="description"
       content="أرسل طلب الحجز الخاص بك عبر موقع مُناسبة.">
 
-<link rel="stylesheet"
-      href="style.css">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-init.js"></script>
 ```
 
 </head>
@@ -190,21 +191,22 @@
             </div>
 
             <div class="form-group">
+    <label for="notes">ملاحظات إضافية</label>
+    <textarea id="notes" rows="4" placeholder="أي تفاصيل أو طلبات أخرى..."></textarea>
+</div>
 
-                <label>ملاحظات إضافية</label>
+<div class="form-group">
+    <label>كود التخفيض (إن وجد)</label>
+    <div style="display: flex; gap: 10px;">
+        <input type="text" id="discountCode" placeholder="أدخل كود الخصم">
+        <button type="button" class="btn btn-main" onclick="applyDiscount()" style="padding: 10px 20px; border-radius: 10px;">تطبيق</button>
+    </div>
+    <span id="discountStatus" style="font-size: 0.9rem; font-weight: bold;"></span>
+</div>
 
-                <textarea id="notes"
-                          rows="4"></textarea>
+<div id="estimate">السعر التقديري: 0 دج</div>
 
-            </div>
-
-            <button type="button"
-                    class="btn btn-whatsapp"
-                    onclick="sendWhatsApp()">
-
-                إرسال عبر واتساب
-
-            </button>
+<button type="button" class="btn btn-main" onclick="sendWhatsApp()">إرسال الطلب عبر واتساب</button>
 
         </form>
 
@@ -259,80 +261,93 @@
 
 <script>
 
-    function sendWhatsApp() {
+<script>
+    let currentDiscountPercent = 0;
 
-        let name =
-            document.getElementById("name").value;
+    async function applyDiscount() {
+        const code = document.getElementById('discountCode').value.trim();
+        const statusSpan = document.getElementById('discountStatus');
+        if(!code) return;
 
-        let phone =
-            document.getElementById("phone").value;
+        const { data, error } = await supabase.from('discounts').select('*').eq('code', code).eq('is_active', true).single();
 
-        let email =
-            document.getElementById("email").value;
-
-        let event =
-            document.getElementById("event").value;
-
-        let date =
-            document.getElementById("date").value;
-
-        let chairs =
-            document.getElementById("chairs").value;
-
-        let tables =
-            document.getElementById("tables").value;
-
-        let freezers =
-            document.getElementById("freezers").value;
-
-        let cooking =
-            document.getElementById("cooking").value;
-
-        let notes =
-            document.getElementById("notes").value;
-
-        let message =
-```
-
-`طلب حجز جديد
-
-الاسم: ${name}
-
-الهاتف: ${phone}
-
-البريد: ${email}
-
-نوع المناسبة: ${event}
-
-التاريخ: ${date}
-
-عدد الكراسي: ${chairs}
-
-عدد الطاولات: ${tables}
-
-عدد المجمدات: ${freezers}
-
-أواني الطبخ:
-${cooking}
-
-ملاحظات:
-${notes}`;
-
-```
-        let url =
-```
-
-"https://wa.me/213552951953?text="
-
-* encodeURIComponent(message);
-
-  ```
-        window.open(url, "_blank");
-
+        if (error || !data) {
+            statusSpan.style.color = "red";
+            statusSpan.innerText = "كود الخصم غير صحيح أو منتهي الصلاحية.";
+            currentDiscountPercent = 0;
+        } else {
+            statusSpan.style.color = "green";
+            statusSpan.innerText = `تم تطبيق الخصم بنجاح: ${data.discount_percent}%`;
+            currentDiscountPercent = parseFloat(data.discount_percent);
+        }
+        calculateEstimate();
     }
-  ```
 
-    </script>
+    function calculateEstimate() {
+        const chairs = parseInt(document.getElementById("chairs").value) || 0;
+        const tables = parseInt(document.getElementById("tables").value) || 0;
+        const freezers = parseInt(document.getElementById("freezers").value) || 0;
+        const estimateBox = document.getElementById("estimate");
+        if (!estimateBox) return;
+
+        let total = (chairs * 30) + (tables * 300) + (freezers * 2500);
+        if (currentDiscountPercent > 0) {
+            total = total - (total * (currentDiscountPercent / 100));
+        }
+        estimateBox.innerHTML = `السعر التقديري: ${Math.ceil(total)} دج`;
+        return total;
+    }
+
+    document.addEventListener("input", (e) => {
+        if(['chairs', 'tables', 'freezers'].includes(e.target.id)) {
+            calculateEstimate();
+        }
+    });
+
+    async function sendWhatsApp() {
+        const name = document.getElementById("name").value;
+        const phone = document.getElementById("phone").value;
+        const email = document.getElementById("email").value;
+        const event = document.getElementById("event").value;
+        const date = document.getElementById("date").value;
+        const chairs = parseInt(document.getElementById("chairs").value) || 0;
+        const tables = parseInt(document.getElementById("tables").value) || 0;
+        const freezers = parseInt(document.getElementById("freezers").value) || 0;
+        const cooking = document.getElementById("cooking").value;
+        const notes = document.getElementById("notes").value;
+        const discountCode = document.getElementById("discountCode").value.trim();
+        
+        if(!name || !phone) {
+            alert("يرجى ملء الاسم الكامل ورقم الهاتف أولاً.");
+            return;
+        }
+
+        const finalPrice = calculateEstimate();
+
+        // حفظ في Supabase
+        const { error } = await supabase.from('orders').insert([{
+            customer_name: name, customer_phone: phone, customer_email: email,
+            event_type: event, event_date: date, chairs_qty: chairs,
+            tables_qty: tables, freezers_qty: freezers, cooking_notes: cooking,
+            additional_notes: notes, total_price: finalPrice,
+            discount_code_used: currentDiscountPercent > 0 ? discountCode : null, status: 'pending'
+        }]);
+
+        if (error) {
+            console.error("خطأ في قاعدة البيانات:", error);
+        }
+
+        // إرسال واتساب
+        let message = `طلب حجز جديد عبر الموقع 📥\n\nالاسم: ${name}\nالهاتف: ${phone}\nنوع المناسبة: ${event}\nالتاريخ: ${date}\nعدد الكراسي: ${chairs}\nعدد الطاولات: ${tables}\nعدد المجمدات: ${freezers}\n`;
+        if(cooking) message += `أواني الطبخ:\n${cooking}\n`;
+        if(notes) message += `ملاحظات:\n${notes}\n`;
+        if(currentDiscountPercent > 0) message += `كود الخصم: ${discountCode} (${currentDiscountPercent}%)\n`;
+        message += `\nالسعر التقديري النهائي: ${Math.ceil(finalPrice)} دج`;
+
+        window.open("https://wa.me/213552951953?text=" + encodeURIComponent(message), "_blank");
+    }
+</script>
+
 
 </body>
 
