@@ -277,6 +277,49 @@
     <script>
         let currentDiscountPercent = 0;
 
+        // 1️⃣ أضف كائن الأسعار هنا
+        let dbPrices = {
+            1: 30,   // كرسي بلاستيكي
+            2: 300,  // طاولة مستطيلة
+            3: 2500, // مجمد
+            5: 30,   // الطبق الرئيسي
+            8: 30,   // طبق الشوربة
+            9: 100,  // أطباق التقديم الكبيرة
+            10: 15,  // الأشواك
+            12: 15,  // الملاعق
+            13: 600, // وعاء صغير
+            14: 700, // وعاء كبير
+            15: 800, // وعاء صغير مع كسكاس
+            16: 900  // وعاء كبير مع كسكاس
+        };
+
+        // 2️⃣ أضف الدالة الخاصة بالجلب هنا
+        async function fetchLivePrices() {
+            try {
+                if (typeof supabase === 'undefined') return;
+                
+                const { data, error } = await supabase.from('products').select('id, price');
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    data.forEach(product => {
+                        const id = parseInt(product.id);
+                        const price = parseFloat(product.price);
+                        dbPrices[id] = price;
+                    });
+                    console.log("✅ تم تحديث الأسعار الحية بالـ ID:", dbPrices);
+                    calculateEstimate(); 
+                }
+            } catch (err) {
+                console.error("❌ فشل جلب الأسعار، تم استخدام الافتراضية:", err);
+            }
+        }
+
+        // 3️⃣ أضف أمر الاستدعاء التلقائي هنا لكي تعمل الدالة فور تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLivePrices();
+        });
+
         async function applyDiscount() {
             const codeInput = document.getElementById('discountCode');
             const statusSpan = document.getElementById('discountStatus');
@@ -303,42 +346,45 @@
         }
 
         function calculateEstimate() {
-            const getValue = (id) => {
-                const el = document.getElementById(id);
-                return el ? (parseInt(el.value) || 0) : 0;
-            };
+    const getValue = (id) => {
+        const el = document.getElementById(id);
+        return el ? (parseInt(el.value) || 0) : 0;
+    };
 
-            const chairs = getValue("chairs");
-            const tables = getValue("tables");
-            const freezers = getValue("freezers");
-            const platesSmall = getValue("plates-small");
-            const platesLarge = getValue("plates-large");
-            const spoonsForks = getValue("spoons-forks");
-            const bigBowls = getValue("big-bowls");
-            const soupBowls = getValue("soup-bowls");
-            const couscoussier = getValue("couscoussier");
+    // جلب الكميات من واجهة المستخدم (HTML)
+    const chairs = getValue("chairs");
+    const tables = getValue("tables");
+    const freezers = getValue("freezers");
+    const platesSmall = getValue("plates-small");
+    const platesLarge = getValue("plates-large");
+    const spoonsForks = getValue("spoons-forks"); 
+    const bigBowls = getValue("big-bowls");
+    const soupBowls = getValue("soup-bowls");
+    const couscoussier = getValue("couscoussier");
 
-            let total = (chairs * 30) 
-                        + (tables * 300) 
-                        + (freezers * 2500)
-                        + (platesSmall * 5) 
-                        + (platesLarge * 5) 
-                        + (spoonsForks * 2)
-                        + (bigBowls * 100) 
-                        + (soupBowls * 20) 
-                        + (couscoussier * 150);
+    // عملية الحساب المباشرة بناءً على رقم الـ ID في الجدول الخاص بك
+    let total = (chairs * dbPrices[1])          // كرسي بلاستيكي (ID: 1)
+                + (tables * dbPrices[2])        // طاولة مستطيلة (ID: 2)
+                + (freezers * dbPrices[3])      // مجمد (ID: 3)
+                + (platesSmall * dbPrices[5])    // الطبق الرئيسي (ID: 5)
+                + (platesLarge * dbPrices[9])    // أطباق التقديم الكبيرة (ID: 9)
+                + (spoonsForks * dbPrices[12])   // الملاعق/الأشواك (ID: 12 أو 10)
+                + (bigBowls * dbPrices[14])      // وعاء كبير (ID: 14)
+                + (soupBowls * dbPrices[13])     // وعاء صغير (ID: 13)
+                + (couscoussier * dbPrices[15]);  // وعاء صغير مع كسكاس (ID: 15)
 
-            if (currentDiscountPercent > 0) {
-                total = total - (total * (currentDiscountPercent / 100));
-            }
-            
-            const estimateBox = document.getElementById("estimate");
-            if (estimateBox) {
-                estimateBox.innerHTML = `السعر التقديري النهائي: ${Math.ceil(total)} دج`;
-            }
-            return total;
-        }
+    // ملاحظة: إذا كان الكسكاس المستخدم في الواجهة هو الكبير، قم بتغيير dbPrices[15] إلى dbPrices[16]
 
+    if (currentDiscountPercent > 0) {
+        total = total - (total * (currentDiscountPercent / 100));
+    }
+    
+    const estimateBox = document.getElementById("estimate");
+    if (estimateBox) {
+        estimateBox.innerHTML = `السعر التقديري النهائي: ${Math.ceil(total)} دج`;
+    }
+    return total;
+}
         document.addEventListener("input", (e) => {
             const fields = ['chairs', 'tables', 'freezers', 'plates-small', 'plates-large', 'spoons-forks', 'big-bowls', 'soup-bowls', 'couscoussier'];
             if (fields.includes(e.target.id)) {
