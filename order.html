@@ -189,7 +189,7 @@
 
                     <label>عدد الأوعية الكبيرة</label>
 
-                    <input type="number" id="" min="0" value="0">
+                    <input type="number" id="big-bowls" min="0" value="0">
 
                 </div>
 
@@ -328,33 +328,53 @@
         }
 
         // دالة حساب السعر التقديري
+        // دالة حساب السعر التقديري الشاملة
         function calculateEstimate() {
-            const chairInput = document.getElementById("chairs");
-            const tableInput = document.getElementById("tables");
-            const freezerInput = document.getElementById("freezers");
-            const estimateBox = document.getElementById("estimate");
+            const getValue = (id) => {
+                const el = document.getElementById(id);
+                return el ? (parseInt(el.value) || 0) : 0;
+            };
 
-            if (!estimateBox) return 0;
+            // جلب الكميات من الحقول بناءً على الـ ID الخاص بكل منها
+            const chairs = getValue("chairs");
+            const tables = getValue("tables");
+            const freezers = getValue("freezers");
+            const platesSmall = getValue("plates-small");
+            const platesLarge = getValue("plates-large");
+            const spoonsForks = getValue("spoons-forks");
+            const bigBowls = getValue("big-bowls");
+            const soupBowls = getValue("soup-bowls");
+            const couscoussier = getValue("couscoussier");
 
-            const chairs = chairInput ? (parseInt(chairInput.value) || 0) : 0;
-            const tables = tableInput ? (parseInt(tableInput.value) || 0) : 0;
-            const freezers = freezerInput ? (parseInt(freezerInput.value) || 0) : 0;
+            // عملية حساب السعر الإجمالي (الكمية × سعر القطعة)
+            let total = (chairs * 30)
+                + (tables * 300)
+                + (freezers * 2500)
+                + (platesSmall * 5)
+                + (platesLarge * 5)
+                + (spoonsForks * 2)
+                + (bigBowls * 100)
+                + (soupBowls * 20)
+                + (couscoussier * 150);
 
-            let total = (chairs * 30) + (tables * 300) + (freezers * 2500);
             if (currentDiscountPercent > 0) {
                 total = total - (total * (currentDiscountPercent / 100));
             }
-            estimateBox.innerHTML = `السعر التقديري: ${Math.ceil(total)} دج`;
+
+            const estimateBox = document.getElementById("estimate");
+            if (estimateBox) {
+                estimateBox.innerHTML = `السعر التقديري: ${Math.ceil(total)} دج`;
+            }
             return total;
         }
 
-        // الاستماع للتغييرات لتحديث السعر لحظياً
+        // الاستماع للتغييرات في كل الحقول لتحديث السعر لحظياً
         document.addEventListener("input", (e) => {
-            if (['chairs', 'tables', 'freezers'].includes(e.target.id)) {
+            const fields = ['chairs', 'tables', 'freezers', 'plates-small', 'plates-large', 'spoons-forks', 'big-bowls', 'soup-bowls', 'couscoussier'];
+            if (fields.includes(e.target.id)) {
                 calculateEstimate();
             }
         });
-
         // 1️⃣ الزر الأول: دالة الحفظ في قاعدة البيانات فقط مع إظهار النتيجة
         async function saveToDatabaseOnly() {
             const nameEl = document.getElementById("name");
@@ -371,36 +391,36 @@
             statusBox.style.color = "#0288d1";
             statusBox.innerText = "جاري إرسال البيانات وحفظ الطلب في النظام...";
 
-            const name = nameEl.value.trim();
-            const phone = phoneEl.value.trim();
-            const email = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
-            const event = document.getElementById("event") ? document.getElementById("event").value : "عام";
-            const date = document.getElementById("date") ? document.getElementById("date").value : "";
-            const chairs = document.getElementById("chairs") ? (parseInt(document.getElementById("chairs").value) || 0) : 0;
-            const tables = document.getElementById("tables") ? (parseInt(document.getElementById("tables").value) || 0) : 0;
-            const freezers = document.getElementById("freezers") ? (parseInt(document.getElementById("freezers").value) || 0) : 0;
-            const cooking = document.getElementById("cooking") ? document.getElementById("cooking").value : "";
-            const notes = document.getElementById("notes") ? document.getElementById("notes").value : "";
-            const discountCode = document.getElementById("discountCode") ? document.getElementById("discountCode").value.trim() : "";
+            const getValue = (id) => {
+                const el = document.getElementById(id);
+                return el ? (parseInt(el.value) || 0) : 0;
+            };
 
             const finalPrice = calculateEstimate();
+            const discountCode = document.getElementById("discountCode") ? document.getElementById("discountCode").value.trim() : "";
 
             try {
                 if (typeof supabase === 'undefined') {
                     throw new Error("اتصال Supabase غير معرف بالمتصفح.");
                 }
 
+                // إدخال البيانات ومطابقتها مع أسماء الأعمدة الجديدة في الجدول
                 const { error } = await supabase.from('orders').insert([{
-                    customer_name: name,
-                    customer_phone: phone,
-                    customer_email: email || null,
-                    event_type: event,
-                    event_date: date || null,
-                    chairs_qty: chairs,
-                    tables_qty: tables,
-                    freezers_qty: freezers,
-                    cooking_notes: cooking || null,
-                    additional_notes: notes || null,
+                    customer_name: nameEl.value.trim(),
+                    customer_phone: phoneEl.value.trim(),
+                    customer_email: document.getElementById("email") ? document.getElementById("email").value.trim() : null,
+                    event_type: document.getElementById("event") ? document.getElementById("event").value : "عام",
+                    event_date: document.getElementById("date") && document.getElementById("date").value ? document.getElementById("date").value : null,
+                    chairs_qty: getValue("chairs"),
+                    tables_qty: getValue("tables"),
+                    freezers_qty: getValue("freezers"),
+                    plates_small_qty: getValue("plates-small"),
+                    plates_large_qty: getValue("plates-large"),
+                    spoons_forks_qty: getValue("spoons-forks"),
+                    big_bowls_qty: getValue("big-bowls"),
+                    soup_bowls_qty: getValue("soup-bowls"),
+                    couscoussier_qty: getValue("couscoussier"),
+                    additional_notes: document.getElementById("notes") ? document.getElementById("notes").value : null,
                     total_price: finalPrice,
                     discount_code_used: currentDiscountPercent > 0 ? discountCode : null,
                     status: 'pending'
@@ -408,7 +428,6 @@
 
                 if (error) throw error;
 
-                // في حال النجاح التام
                 statusBox.style.backgroundColor = "#d4edda";
                 statusBox.style.color = "#155724";
                 statusBox.innerText = "✅ تم حفظ طلب حجزك بنجاح في قاعدة البيانات الإدارية!";
@@ -455,9 +474,44 @@
         }
 
         // 3️⃣ الزر الثالث: دالة الحفظ في قاعدة البيانات ثم الإرسال عبر واتساب
-        async function sendWhatsApp() {
-            await saveToDatabaseOnly();
-            sendWhatsAppOnly();
+        function sendWhatsAppOnly() {
+            const nameEl = document.getElementById("name");
+            const phoneEl = document.getElementById("phone");
+
+            if (!nameEl || !phoneEl || !nameEl.value.trim() || !phoneEl.value.trim()) {
+                alert("يرجى ملء الاسم الكامل ورقم الهاتف أولاً لصياغة رسالة الواتساب.");
+                return;
+            }
+
+            const getValue = (id) => document.getElementById(id) ? (parseInt(document.getElementById(id).value) || 0) : 0;
+
+            let message = `طلب حجز جديد عبر الموقع 📥\n\n`;
+            message += `الاسم: ${document.getElementById("name").value.trim()}\n`;
+            message += `الهاتف: ${document.getElementById("phone").value.trim()}\n`;
+            message += `نوع المناسبة: ${document.getElementById("event").value}\n`;
+            message += `التاريخ: ${document.getElementById("date").value}\n\n`;
+
+            // إضافة المنتجات للرسالة فقط إذا كانت كميتها أكبر من 0
+            if (getValue("chairs") > 0) message += `🔹 عدد الكراسي: ${getValue("chairs")}\n`;
+            if (getValue("tables") > 0) message += `🔹 عدد الطاولات: ${getValue("tables")}\n`;
+            if (getValue("freezers") > 0) message += `🔹 عدد المجمدات: ${getValue("freezers")}\n`;
+            if (getValue("plates-small") > 0) message += `🔹 صحون صغيرة: ${getValue("plates-small")}\n`;
+            if (getValue("plates-large") > 0) message += `🔹 صحون كبيرة: ${getValue("plates-large")}\n`;
+            if (getValue("spoons-forks") > 0) message += `🔹 ملاعق وأشواك: ${getValue("spoons-forks")}\n`;
+            if (getValue("big-bowls") > 0) message += `🔹 أوعية كبيرة: ${getValue("big-bowls")}\n`;
+            if (getValue("soup-bowls") > 0) message += `🔹 أوعية صغيرة: ${getValue("soup-bowls")}\n`;
+            if (getValue("couscoussier") > 0) message += `🔹 كسكاسات: ${getValue("couscoussier")}\n`;
+
+            const notes = document.getElementById("notes") ? document.getElementById("notes").value.trim() : "";
+            if (notes) message += `\n📝 ملاحظات: ${notes}\n`;
+
+            const finalPrice = calculateEstimate();
+            const discountCode = document.getElementById("discountCode") ? document.getElementById("discountCode").value.trim() : "";
+            if (currentDiscountPercent > 0) message += `\n🏷️ كود الخصم: ${discountCode} (${currentDiscountPercent}%)\n`;
+
+            message += `\n💰 السعر التقديري الإجمالي: ${Math.ceil(finalPrice)} دج`;
+
+            window.open("https://wa.me/213552951953?text=" + encodeURIComponent(message), "_blank");
         }
     </script>
     <script src="main.js"></script>
